@@ -1,95 +1,89 @@
 const path = require('path');
 const fs = require('fs');
+const http = require('http');
+const portfinder = require('portfinder');
 
 const clientsFolderPath = path.join(__dirname, 'Clients');
-const aboutFolderPath = path.join(clientsFolderPath, 'About');
-const blogFolderPath = path.join(clientsFolderPath, 'Blog');
-const contactFolderPath = path.join(clientsFolderPath, 'Contact');
+const subfolders = [
+  { name: 'About', color: '#FFC0CB' },
+  { name: 'Contact', color: '#FF69B4' },
+  { name: 'Blog', color: '#DA70D6' }
+];
+
+// Function to create a folder and write to files inside it
+function createFolderAndFiles(folderPath, pageTitle, cssContent) {
+  if (!fs.existsSync(folderPath)) {
+    fs.mkdirSync(folderPath);
+    console.log(`"${path.basename(folderPath)}" folder created...`);
+  }
+
+  let linksHTML = '';
+
+   // Add links only if the folder is the "Clients" folder
+   if (folderPath === clientsFolderPath) {
+    linksHTML = `
+      <!-- Add links to subfolder pages -->
+      <ul>
+        <li><a href="./About/index.html">About</a></li>
+        <li><a href="./Contact/index.html">Contact</a></li>
+        <li><a href="./Blog/index.html">Blog</a></li>
+      </ul>
+    `;
+  }
+
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>${pageTitle}</title>
+      <link rel="stylesheet" href="./style.css">
+    </head>
+    <body>
+      <h1>${pageTitle}</h1>
+      ${linksHTML}
+    </body>
+    </html>
+  `;
+
+  fs.writeFile(path.join(folderPath, 'index.html'), htmlContent, err => {
+    if (err) throw err;
+    console.log('HTML file written...');
+  });
+
+  fs.writeFile(path.join(folderPath, 'style.css'), cssContent, err => {
+    if (err) throw err;
+    console.log('CSS file written...');
+  });
+}
 
 // Create subfolders inside Clients folder
-const subfolders = ['About', 'Contact', 'Blog'];
 subfolders.forEach(subfolder => {
-  const subfolderPath = path.join(clientsFolderPath, subfolder);
-  if (!fs.existsSync(subfolderPath)) {
-    fs.mkdirSync(subfolderPath);
-    console.log(`"${subfolder}" folder created...`);
-  }
+  const subfolderPath = path.join(clientsFolderPath, subfolder.name);
+  const pageTitle = subfolder.name;
+  const cssContent = `body { background-color:${subfolder.color}; color: #333; font-family: Arial, sans-serif; }`;
+
+  createFolderAndFiles(subfolderPath, pageTitle, cssContent);
 });
 
 // Create and write to file inside Clients folder
-fs.writeFile(
-  path.join(clientsFolderPath, 'index.html'),
-  'Hello World!',
-  err => {
-    if (err) throw err;
-    console.log('File written to...');
+const clientsCSSContent = `body { background-color:#FF00FF; color: #333; font-family: Arial, sans-serif; }`;
+
+createFolderAndFiles(clientsFolderPath, 'Clients', clientsCSSContent);
+
+// Find an available port dynamically
+portfinder.getPort((err, port) => {
+  if (err) {
+    console.error('Error finding available port:', err);
+  } else {
+    // Start the server only once
+    const server = http.createServer();
+    server.on('request', (req, res) => {
+      console.log('A request has been submitted');
+      res.end();
+    });
+
+    server.listen(port, () => {
+      console.log(`Server started on http://127.0.0.1:${port}`);
+    });
   }
-);
-
-fs.writeFile(
-    path.join(clientsFolderPath, 'style.css'),
-    'body { background-color:#FF00FF; color: #333; font-family: Arial, sans-serif; }',
-    err => {
-      if (err) throw err;
-      console.log('CSS file written...');
-    }
-  );
-
-// Create and write to file inside About folder
-fs.writeFile(
-    path.join(aboutFolderPath, 'index.html'),
-    'Hello hello',
-    err => {
-        if (err) throw err;
-        console.log('File written to...');
-      }
-);
-
-fs.writeFile(
-    path.join(aboutFolderPath, 'style.css'),
-    'body { background-color:#FFC0CB; color: #333; font-family: Arial, sans-serif; }',
-    err => {
-      if (err) throw err;
-      console.log('CSS file written...');
-    }
-  );
-
-// Create and write to file inside Blog folder
-fs.writeFile(
-    path.join(blogFolderPath, 'index.html'),
-    'Hi Barbie',
-    err => {
-        if (err) throw err;
-        console.log('File written to...');
-      }
-);
-
-fs.writeFile(
-    path.join(blogFolderPath, 'style.css'),
-    'body { background-color:#DA70D6; color: #333; font-family: Arial, sans-serif; }',
-    err => {
-      if (err) throw err;
-      console.log('CSS file written...');
-    }
-  );
-
-// Create and write to file inside Contact folder
-fs.writeFile(
-    path.join(contactFolderPath, 'index.html'),
-    'Hi Barbie',
-    err => {
-        if (err) throw err;
-        console.log('File written to...');
-      }
-);
-
-fs.writeFile(
-    path.join(contactFolderPath, 'style.css'),
-    'body { background-color:#FF69B4; color: #333; font-family: Arial, sans-serif; }',
-    err => {
-      if (err) throw err;
-      console.log('CSS file written...');
-    }
-  );
-
-
+});
