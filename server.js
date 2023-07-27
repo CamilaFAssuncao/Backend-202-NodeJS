@@ -96,31 +96,18 @@ portfinder.getPort((err, port) => {
         }
 
          // routing
-  let route = './Clients/';
-  switch(req.url) {
-    case '/':
-      route += 'index.html';
-      res.statusCode = 200;
-      break;
-    case '/About':
-      route += 'index.html';
-      res.statusCode = 200;
-      break;
-      case '/Blog':
-      route += 'index.html';
-      res.statusCode = 200;
-      break;
-      case '/Contact':
-      route += 'index.html';
-      res.statusCode = 200;
-      break;
-    default:
-      route += 'index.html';
-      res.statusCode = 404;
-  }
+         let route = './Clients';
+         const foundSubfolder = subfolders.find(subfolder => req.url === `/${subfolder.name}`);
+         if (foundSubfolder) {
+           route += `/${foundSubfolder.name}/index.html`;
+           res.statusCode = 200;
+         } else {
+           route += '/index.html';
+           res.statusCode = 404;
+         }
 
   // send html
-  fs.readFile(path, (err, data) => {
+  fs.readFile(route, (err, data) => {
     if (err) {
       console.log(err);
       res.end();
