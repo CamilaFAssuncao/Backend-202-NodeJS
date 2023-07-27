@@ -29,3 +29,22 @@ const handleButtonClick = (e) => {
 
 
 
+  module.exports = { handleButtonClick };
+
+  // const user = {
+  //   id: 1,
+  //   username: 'usuario123',
+  //   role: 'admin' // você pode adicionar informações adicionais sobre o usuário aqui
+  // };
+  
+  // const token = jwt.sign(user, secretKey, { expiresIn: '1h' });
+  // console.log('Token:', token);
+  
+  // User/signin.js
+
+function signinMiddleware(req, res, next) {
+  // Your sign-in logic here
+  // Make sure to call next() to move to the next middleware or route handler
+}
+
+module.exports = signinMiddleware;
