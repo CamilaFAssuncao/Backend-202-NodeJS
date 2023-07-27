@@ -1,3 +1,11 @@
+const jwt = require('jsonwebtoken');
+
+// Load environment variables from .env file
+require('dotenv').config();
+
+// Get the secret key from environment variables
+const secretKey = process.env.SECRET_KEY;
+
 const emailInput = document.getElementById("email");
 const passwordInput = document.getElementById("password");
 
@@ -31,14 +39,14 @@ const handleButtonClick = (e) => {
 
   module.exports = { handleButtonClick };
 
-  // const user = {
-  //   id: 1,
-  //   username: 'usuario123',
-  //   role: 'admin' // você pode adicionar informações adicionais sobre o usuário aqui
-  // };
+  const user = {
+    id: 1,
+    username: 'usuario123',
+    role: 'admin' // você pode adicionar informações adicionais sobre o usuário aqui
+  };
   
-  // const token = jwt.sign(user, secretKey, { expiresIn: '1h' });
-  // console.log('Token:', token);
+  const token = jwt.sign(user, secretKey);
+  console.log('Token:', token);
   
   // User/signin.js
 
